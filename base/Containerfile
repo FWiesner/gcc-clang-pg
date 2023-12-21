@@ -1,0 +1,22 @@
+ARG BASE_IMAGE
+
+FROM ${BASE_IMAGE}
+
+ARG BINUTILS_TAR_XZ
+ARG GMP_TAR_XZ
+ARG BINUTILS_VERSION
+ARG GMP_VERSION
+
+RUN microdnf install gcc g++ xz m4 \
+    && microdnf clean all
+
+RUN curl -s -L $GMP_TAR_XZ | tar xJ -C /tmp \
+    && curl -s -L $BINUTILS_TAR_XZ | tar xJ -C /tmp
+
+WORKDIR /tmp/gmp-$GMP_VERSION
+
+RUN ./configure --exec-prefix=/opt/toolchains/host \
+     --prefix=/opt/toolchains/host \
+     --enable-cxx
+
+RUN make -j 6 && make check && make install
