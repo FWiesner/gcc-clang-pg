@@ -2,7 +2,6 @@ ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE}
 
-ARG GMP_TAR_XZ
 ARG GMP_VERSION
 ARG MPFR_TAR_XZ
 ARG MPFR_VERSION
@@ -14,10 +13,12 @@ ARG BINUTILS_VERSION
 RUN microdnf install gcc g++ xz m4 diffutils \
     && microdnf clean all
 
-RUN curl -s -L $GMP_TAR_XZ | tar xJ -C /tmp \
-    && curl -s -L $MPFR_TAR_XZ | tar xJ -C /tmp \
-    && curl -s -L $MPC_TAR_GZ | tar xz -C /tmp \
-    && curl -s -L $BINUTILS_TAR_XZ | tar xJ -C /tmp
+ADD .downloads/gmp-${GMP_VERSION}.tar.xz /tmp/
+
+#RUN curl -s -L $GMP_TAR_XZ | tar xJ -C /tmp \
+#    && curl -s -L $MPFR_TAR_XZ | tar xJ -C /tmp \
+#    && curl -s -L $MPC_TAR_GZ | tar xz -C /tmp \
+#    && curl -s -L $BINUTILS_TAR_XZ | tar xJ -C /tmp
 
 WORKDIR /tmp/gmp-$GMP_VERSION
 
@@ -29,24 +30,24 @@ RUN ./configure \
 RUN make -j 6 && make check && make install
 
 
-WORKDIR /tmp/mpfr-$MPFR_VERSION
+#WORKDIR /tmp/mpfr-$MPFR_VERSION
 
-RUN ./configure \
-     --with-gmp-include=/opt/toolchains/host/include/ \
-     --with-gmp-lib=/opt/toolchains/host/lib/ \
-     --prefix=/opt/toolchains/generic/ \
-     --exec-prefix=/opt/toolchains/host/
+#RUN ./configure \
+#     --with-gmp-include=/opt/toolchains/host/include/ \
+#     --with-gmp-lib=/opt/toolchains/host/lib/ \
+#     --prefix=/opt/toolchains/generic/ \
+#     --exec-prefix=/opt/toolchains/host/
 
-RUN make -j 6 && make check && make install
+#RUN make -j 6 && make check && make install
 
 
-WORKDIR /tmp/mpc-$MPC_VERSION
+#WORKDIR /tmp/mpc-$MPC_VERSION
 
-RUN ./configure \
-     --with-gmp-include=/opt/toolchains/host/include/ \
-     --with-gmp-lib=/opt/toolchains/host/lib/ \
-     --with-mpfr-lib=/opt/toolchains/host/lib \
-     --with-mpfr-include=/opt/toolchains/generic/include
+#RUN ./configure \
+#     --with-gmp-include=/opt/toolchains/host/include/ \
+#     --with-gmp-lib=/opt/toolchains/host/lib/ \
+#     --with-mpfr-lib=/opt/toolchains/host/lib \
+#     --with-mpfr-include=/opt/toolchains/generic/include
 
-RUN make -j 6 && make check && make install
+#RUN make -j 6 && make check && make install
 
